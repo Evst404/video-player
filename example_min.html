@@ -3,6 +3,8 @@
 <head>
   <title>Пример подключения плеера</title>
   <meta charset="utf-8">
+  <!-- Подключаем Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <script src="http://localhost:35729/livereload.js"></script>
 <body>
@@ -11,8 +13,10 @@
     <!-- Here can be placed player controls: play and volume buttons -->
   </div>
 
-  <!-- Кнопка Play -->
-  <button id="play-button">Play</button>
+  <!-- Кнопка с иконкой Play -->
+  <button id="play-button">
+    <i class="fa fa-play" aria-hidden="true"></i>
+  </button>
 
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://unpkg.com/playable@2.10.3/dist/statics/playable.bundle.min.js"></script>
