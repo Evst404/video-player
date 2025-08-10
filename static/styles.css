@@ -1,0 +1,38 @@
+/* Стили плеера */
+
+.player {
+  width: 800px;
+  height: 600px;
+  position: relative;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+.video-container {
+  width: 100%;
+  height: calc(100% - 50px);
+}
+
+.control-panel {
+  background: black;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.control-panel__button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0 8px;
+  transition: color 0.3s ease;
+}
+
+.control-panel__button:hover {
+  color: #ccc;
+}
+
+.control-panel__spacer {
+  flex-grow: 1;
+}
