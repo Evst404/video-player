@@ -16,13 +16,25 @@
 
 ---
 
-## Использование
+## Как запустить
+1. Скачайте проект или клонируйте репозиторий.
+2. Откройте index.html в браузере.
+3. Плеер будет готов к использованию.
 
-Плеер создаётся вызовом функции `createPlayer` из библиотеки [Playable](https://github.com/playable/Playable).
+## Выбор видео
+Взято из [документации](https://github.com/devmanorg/video-player-jslib/blob/master/README.md) библиотеки используемой для создания данного плеера.
 
-Пример создания плеера с указанием элемента по id:
-
-```js
-createPlayer({
-  elementId: 'player',
-});
+По умолчанию плеер воспроизводит видео по [ссылке](https://al-evst.github.io/video-player/).
+ 
+При создании плеера можно передать параметр src с ссылкой на видео.
+Ссылка обязательно должна заканчиваться на расширение файла (.mp4, .webm и т.п.).
+```
+<script>
+  const playerInstance = createPlayer({
+    elementId: 'player',
+    src: 'https://example.com/my-video.mp4'
+  });
+</script>
+```
+## Пример работы
+Рабочий плеер можно открыть по [ссылке](https://al-evst.github.io/video-player).
