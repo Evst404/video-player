@@ -1,17 +1,18 @@
 /* Стили плеера */
+
 .player {
   width: 800px;
   height: 600px;
   position: relative;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
 
-  display: flex;          
-  flex-direction: column; 
+  display: flex;           
+  flex-direction: column;  
 }
 
 .video-container {
-  flex-grow: 1;           
-  background: black;
+  width: 100%;
+  flex-grow: 1;            
 }
 
 .control-panel {
@@ -19,7 +20,6 @@
   display: flex;
   align-items: center;
   padding: 10px;
-  flex-shrink: 0;         
 }
 
 .control-panel__button {
@@ -28,18 +28,12 @@
   color: white;
   font-size: 28px;
   cursor: pointer;
+
+  width: 40px;   
+  height: 40px;  
+
+  padding: 0;
   transition: color 0.3s ease;
-
-  /* фиксированные размеры кнопки */
-  width: 40px;
-  height: 40px;
-
-  /* выравнивание иконки по центру */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0; 
 }
 
 .control-panel__button:hover {
