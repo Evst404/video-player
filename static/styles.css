@@ -1,15 +1,17 @@
 /* Стили плеера */
-
 .player {
   width: 800px;
   height: 600px;
   position: relative;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+
+  display: flex;          /* флекс-контейнер */
+  flex-direction: column; /* вертикально */
 }
 
 .video-container {
-  width: 100%;
-  height: calc(100% - 50px);
+  flex-grow: 1;           /* занимает всё доступное пространство */
+  background: black;
 }
 
 .control-panel {
@@ -17,6 +19,7 @@
   display: flex;
   align-items: center;
   padding: 10px;
+  flex-shrink: 0;         /* фиксированная высота панели */
 }
 
 .control-panel__button {
