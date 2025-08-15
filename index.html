@@ -21,10 +21,19 @@
       <button class="control-panel__button js-volume-button" title="Unmute" hidden>
         <i class="fa fa-volume-off" aria-hidden="true"></i>
       </button>
-
       <button class="control-panel__button js-mute-button" title="Mute">
         <i class="fa fa-volume-up" aria-hidden="true"></i>
       </button>
+
+      <!-- Время и прогрессбар -->
+      <div class="time-container js-progress">
+        <span class="js-current-time">0:00</span>
+        <div class="progress-bar">
+          <div class="progress-filled js-progress-slider"></div>
+          <div class="progress-thumb"></div> <!-- Круглый ползунок -->
+        </div>
+        <span class="js-duration">0:00</span>
+      </div>
 
       <div class="control-panel__spacer"></div>
 
@@ -34,43 +43,11 @@
     </div>
   </div>
 
-  <!-- Скрипты -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://unpkg.com/playable@2.10.3/dist/statics/playable.bundle.min.js"></script>
   <script src="static/player.js"></script>
-
   <script>
-    const playerInstance = createPlayer({ elementId: 'player' });
-
-    const videoContainer = document.querySelector('.js-video-container');
-    videoContainer.addEventListener('click', function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-    });
-
-    // Переключатель полноэкранного режима
-    const fullscreenButton = document.querySelector('.js-fullscreen-button');
-    const player = document.getElementById('player');
-
-    fullscreenButton.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        if (player.requestFullscreen) {
-          player.requestFullscreen();
-        } else if (player.webkitRequestFullscreen) { /* Safari */
-          player.webkitRequestFullscreen();
-        } else if (player.msRequestFullscreen) { /* IE11 */
-          player.msRequestFullscreen();
-        }
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) { /* Safari */
-          document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) { /* IE11 */
-          document.msExitFullscreen();
-        }
-      }
-    });
+    const playerInstance = createPlayer({elementId: 'player'});
   </script>
 </body>
 </html>

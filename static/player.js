@@ -1,218 +1,157 @@
 function createPlayer({
   elementId,
-  src='https://dvmn.org/media/filer_public/78/db/78db3456-3fd3-4504-9ed9-d2d1fd843c0b/highest_peak.mp4'
-}){
+  src = 'https://dvmn.org/media/filer_public/78/db/78db3456-3fd3-4504-9ed9-d2d1fd843c0b/highest_peak.mp4'
+}) {
   const player = Playable.create({
     fillAllSpace: true,
     src: src,
     hideOverlay: true,
     hideMainUI: true,
   });
-  const playerContainer = document.getElementById(elementId)
 
-  if (!playerContainer){
-    throw Error(`Element with id "${elementId}" not found.`);
-  }
+  const playerContainer = document.getElementById(elementId);
+  if (!playerContainer) throw Error(`Element with id "${elementId}" not found.`);
 
-  const videoContainers = playerContainer.getElementsByClassName('js-video-container');
+  const videoContainer = playerContainer.querySelector('.js-video-container');
+  if (!videoContainer) throw Error(`Element with class "js-video-container" not found.`);
 
-  if (!videoContainers.length){
-    throw Error(`Element with class "js-video-container" not found.`);
-  }
-
-  if (videoContainers.length > 1){
-    throw Error(`Expects single element with class "js-video-container", but ${videoContainers.length} were found.`);
-  }
-
-  const videoContainer = videoContainers[0];
   player.attachToElement(videoContainer);
 
   const $playerContainer = $(playerContainer);
 
-  (function activatePlayButtons(){
+  // Play / Pause
+  (function () {
     const $playButton = $playerContainer.find('.js-play-button');
     const $pauseButton = $playerContainer.find('.js-pause-button');
 
-    $playButton.click(()=>{
-      player.play();
-    });
-    $pauseButton.click(()=>{
-      player.pause();
-    });
+    $playButton.click(() => player.play());
+    $pauseButton.click(() => player.pause());
 
-    function activatePlayBtn(){
+    function showPlay() {
       $playButton.attr("hidden", false);
       $pauseButton.attr("hidden", true);
     }
-
-    function activatePauseBtn(){
+    function showPause() {
       $playButton.attr("hidden", true);
       $pauseButton.attr("hidden", false);
     }
 
-    activatePlayBtn();
-
-    player.on(Playable.ENGINE_STATES.PLAYING, activatePauseBtn);
-    player.on(Playable.ENGINE_STATES.PAUSED, activatePlayBtn);
-    player.on(Playable.ENGINE_STATES.ENDED, ()=>{
+    showPlay();
+    player.on(Playable.ENGINE_STATES.PLAYING, showPause);
+    player.on(Playable.ENGINE_STATES.PAUSED, showPlay);
+    player.on(Playable.ENGINE_STATES.ENDED, () => {
       player.reset();
-      activatePlayBtn();
+      showPlay();
     });
   })();
 
-  (function activateVolumeButtons(){
+  // Volume
+  (function () {
     const $volumeButton = $playerContainer.find('.js-volume-button');
     const $muteButton = $playerContainer.find('.js-mute-button');
 
-    $volumeButton.click(()=>{
-      player.setVolume(100);
-    });
-    $muteButton.click(()=>{
-      player.setVolume(0);
-    });
+    $volumeButton.click(() => player.setVolume(100));
+    $muteButton.click(() => player.setVolume(0));
 
-    function activateVolumeButton(){
+    function showVolume() {
       $volumeButton.attr("hidden", false);
       $muteButton.attr("hidden", true);
     }
-
-    function activateMuteBtn(){
+    function showMute() {
       $volumeButton.attr("hidden", true);
       $muteButton.attr("hidden", false);
     }
-
-    function toggleVolumeMuteBtns(){
-      if (player.getVolume() > 0){
-        activateMuteBtn();
-      } else {
-        activateVolumeButton();
-      }
+    function toggle() {
+      player.getVolume() > 0 ? showMute() : showVolume();
     }
 
-    player.on(Playable.VIDEO_EVENTS.VOLUME_CHANGED, toggleVolumeMuteBtns);
-    toggleVolumeMuteBtns();
+    player.on(Playable.VIDEO_EVENTS.VOLUME_CHANGED, toggle);
+    toggle();
   })();
 
-  const $fullscreenButton = $playerContainer.find('.js-fullscreen-button');
-  $fullscreenButton.click(()=>{
-    player.enterFullScreen();
-  });
+  // Fullscreen
+  $playerContainer.find('.js-fullscreen-button').click(() => player.enterFullScreen());
 
+  // Time formatting
   function formatTime(seconds) {
-    // StackOverflow snippet https://stackoverflow.com/a/52560608
     const format = val => `0${Math.floor(val)}`.slice(-2);
     const hours = seconds / 3600;
     const minutes = (seconds % 3600) / 60;
-
     return [Math.floor(hours), format(minutes), format(seconds % 60)].join(':');
   }
 
-  (function activateTimeLabels(){
+  // Time labels
+  (function () {
     const $currentTime = $playerContainer.find('.js-current-time');
-    function showCurrentTime(){
-      const totalSeconds = player.getCurrentTime();
-      const formattedTime = formatTime(totalSeconds);
-      $currentTime.text(formattedTime);
-    }
-    player.on(Playable.VIDEO_EVENTS.CURRENT_TIME_UPDATED, showCurrentTime);
-    showCurrentTime();
-
     const $duration = $playerContainer.find('.js-duration');
-    function showDuration(){
-      const totalSeconds = player.getDuration();
-      const formattedTime = formatTime(totalSeconds);
-      $duration.text(formattedTime);
+
+    function updateCurrent() {
+      $currentTime.text(formatTime(player.getCurrentTime()));
     }
-    player.on(Playable.VIDEO_EVENTS.DURATION_UPDATED, showDuration);
-    showDuration();
+    function updateDuration() {
+      $duration.text(formatTime(player.getDuration()));
+    }
+
+    player.on(Playable.VIDEO_EVENTS.CURRENT_TIME_UPDATED, updateCurrent);
+    player.on(Playable.VIDEO_EVENTS.DURATION_UPDATED, updateDuration);
+
+    updateCurrent();
+    updateDuration();
   })();
 
-  function throttle(func, ms) {
-    // Source code snippet https://learn.javascript.ru/task/throttle
-
-    let isThrottled = false,
-      savedArgs,
-      savedThis;
-
-    function wrapper() {
-
-      if (isThrottled) { // (2)
-        savedArgs = arguments;
-        savedThis = this;
-        return;
-      }
-
-      func.apply(this, arguments); // (1)
-
-      isThrottled = true;
-
-      setTimeout(function() {
-        isThrottled = false; // (3)
-        if (savedArgs) {
-          wrapper.apply(savedThis, savedArgs);
-          savedArgs = savedThis = null;
-        }
-      }, ms);
-    }
-
-    return wrapper;
-  }
-
-  (function activateProgressbar(){
+  // Progress bar с ползунком, появляющимся при наведении
+  (function () {
     const $progress = $playerContainer.find('.js-progress');
     const $slider = $progress.find('.js-progress-slider');
+    let $thumb = $playerContainer.find('.progress-thumb');
 
-    function setSliderWidth(percentage){
+    if (!$thumb.length) {
+      $thumb = $('<div class="progress-thumb"></div>');
+      $progress.append($thumb);
+    }
+
+    function setSlider(percentage) {
       $slider.css("width", `${percentage}%`);
+      $thumb.css("left", `${percentage}%`);
     }
 
-    function updateSliderWidth(){
-      const durationSeconds = player.getDuration();
-      if (!durationSeconds){
-        $slider.css("width", "0%");
-        return;
-      }
-      const percentage = player.getCurrentTime() / durationSeconds * 100;
-      setSliderWidth(percentage);
+    function updateFromPlayer() {
+      const duration = player.getDuration();
+      if (!duration) return setSlider(0);
+      setSlider((player.getCurrentTime() / duration) * 100);
     }
-    player.on(Playable.VIDEO_EVENTS.CURRENT_TIME_UPDATED, updateSliderWidth);
-    player.on(Playable.VIDEO_EVENTS.DURATION_UPDATED, updateSliderWidth);
-    updateSliderWidth();
 
-    // Code snippet from https://codepen.io/frytyler/pen/juGfk
+    // Плавное обновление ползунка по событиям плеера
+    player.on(Playable.VIDEO_EVENTS.CURRENT_TIME_UPDATED, updateFromPlayer);
+    player.on(Playable.VIDEO_EVENTS.DURATION_UPDATED, updateFromPlayer);
+    updateFromPlayer();
 
-    function updateVideoProgress(x){
-      const durationSeconds = player.getDuration();
+    function seekToPosition(pageX) {
+      const duration = player.getDuration();
+      let percentage = ((pageX - $progress.offset().left) / $progress.width()) * 100;
+      percentage = Math.max(0, Math.min(percentage, 100));
+      setSlider(percentage);
+      player.seekTo(duration * percentage / 100);
+    }
 
-      //calculate drag position
-      //and update video currenttime
-      //as well as progress bar
-
-      var relPosition = x - $progress.offset().left;
-      var percentage = 100 * relPosition / $progress.width();
-      if(percentage > 100) {
-        percentage = 100;
-      }
-      if(percentage < 0) {
-        percentage = 0;
-      }
-      setSliderWidth(percentage);  // Redraw before CURRENT_TIME_UPDATED event for better responsiveness
-      seconds = durationSeconds * percentage / 100;
-      player.seekTo(seconds);
-    };
-
-    const throttledUpdateVideoProgress = throttle(updateVideoProgress, 100);
-
-
-    $progress.on('mousedown', function(e) {
-      throttledUpdateVideoProgress(e.pageX);
-      $(document).on('mousemove', (e) => {
-        throttledUpdateVideoProgress(e.pageX)
-      });
+    // Клик по прогресс-бару
+    $progress.on('mousedown', function (e) {
+      seekToPosition(e.pageX);
+      $(document).on('mousemove.video', e => seekToPosition(e.pageX));
     });
-    $progress.on('mouseup', function(e) {
-      $(document).off('mousemove');
-      throttledUpdateVideoProgress(e.pageX);
+
+    $(document).on('mouseup.video', function () {
+      $(document).off('mousemove.video');
+    });
+
+    // Перетаскивание ползунка
+    $thumb.on('mousedown', function (e) {
+      e.stopPropagation();
+      $(document).on('mousemove.thumb', e => seekToPosition(e.pageX));
+    });
+
+    $(document).on('mouseup.thumb', function () {
+      $(document).off('mousemove.thumb');
     });
   })();
 }
