@@ -37,4 +37,4 @@
 </script>
 ```
 ## Пример работы
-Рабочий плеер можно открыть по [ссылке](https://al-evst.github.io/video-player).
+Рабочий плеер можно открыть по [ссылке](https://evst404.github.io/video-player/).
